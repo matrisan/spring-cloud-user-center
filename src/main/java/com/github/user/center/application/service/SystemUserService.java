@@ -3,8 +3,8 @@ package com.github.user.center.application.service;
 import com.github.user.center.application.CreateUserCommand;
 import com.github.user.center.application.UserSaveResult;
 import com.github.user.center.application.common.UserCreateFactory;
+import com.github.user.center.domain.aggregate.SystemUserAggregateRoot;
 import com.github.user.center.domain.entity.SystemRoleEntity;
-import com.github.user.center.domain.aggregate.SystemUser;
 import com.github.user.center.domain.repository.ISystemRoleRepository;
 import com.github.user.center.domain.repository.ISystemUserRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,20 +35,20 @@ public class SystemUserService {
     private final ISystemRoleRepository roleRepository;
 
     @Transactional(rollbackFor = Throwable.class)
-    public UserSaveResult createUser(@Validated @NotNull CreateUserCommand command) {
+    public UserSaveResult createUser(@Validated CreateUserCommand command) {
         List<SystemRoleEntity> roles = roleRepository.findAllById(command.getRoleIds());
-        SystemUser user = UserCreateFactory.createUser(command, roles);
-        SystemUser save = userRepository.save(user);
+        SystemUserAggregateRoot user = UserCreateFactory.createUser(command, roles);
+        SystemUserAggregateRoot save = userRepository.save(user);
         return null;
     }
 
     @Transactional(rollbackFor = Throwable.class)
-    public UserSaveResult updateUserRoles(SystemUser user, List<SystemRoleEntity> roles) {
+    public UserSaveResult updateUserRoles(@NotNull SystemUserAggregateRoot user, List<SystemRoleEntity> roles) {
         user.replaceAllRoles(roles);
         return null;
     }
 
-    public UserSaveResult deleteUser(SystemUser user) {
+    public UserSaveResult deleteUser(SystemUserAggregateRoot user) {
         userRepository.delete(user);
         return null;
     }
