@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.github.user.center.domain.annotation.AggregateRoot;
 import com.github.user.center.domain.common.SystemUserExtend;
+import com.github.user.center.domain.entity.BaseEntity;
 import com.github.user.center.domain.entity.SystemRoleEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -53,13 +54,14 @@ import static javax.persistence.ConstraintMode.NO_CONSTRAINT;
 @Slf4j
 @Getter
 @Entity
+//@Audited(targetAuditMode = NOT_AUDITED)
 @ToString
 @AggregateRoot
 @NoArgsConstructor
 @Setter(AccessLevel.PRIVATE)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @SecondaryTable(name = USER_EXTEND_INFO, pkJoinColumns = @PrimaryKeyJoinColumn(name = USER_ID), foreignKey = @ForeignKey(NO_CONSTRAINT))
-public class SystemUserAgg implements UserDetails {
+public class SystemUserAgg extends BaseEntity implements UserDetails {
 
     private static final long serialVersionUID = -8750984095480358268L;
 
@@ -74,7 +76,6 @@ public class SystemUserAgg implements UserDetails {
     String phone;
 
     @JsonIgnore
-    @Column(columnDefinition = "VARCHAR(255) COMMENT '密码'")
     String password;
 
     @MapKey
@@ -126,6 +127,11 @@ public class SystemUserAgg implements UserDetails {
 
     public void deleteRoles(List<SystemRoleEntity> roles) {
 
+    }
+
+    public boolean updatePassword(String password) {
+        this.password = password;
+        return true;
     }
 
     @Override

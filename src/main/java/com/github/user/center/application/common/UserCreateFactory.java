@@ -1,6 +1,6 @@
 package com.github.user.center.application.common;
 
-import com.github.user.center.application.CreateUserCommand;
+import com.github.user.center.application.UserCreateCommand;
 import com.github.user.center.domain.aggregate.SystemUserAgg;
 import com.github.user.center.domain.entity.SystemRoleEntity;
 import lombok.extern.slf4j.Slf4j;
@@ -22,8 +22,10 @@ public class UserCreateFactory {
     private UserCreateFactory() {
     }
 
-    public static SystemUserAgg createUser(CreateUserCommand command, List<SystemRoleEntity> roles) {
-        return new SystemUserAgg();
+    public static SystemUserAgg createUser(UserCreateCommand command, List<SystemRoleEntity> roles) {
+        SystemUserAgg userAgg = ISystemUserMapper.INSTANCE.from(command);
+        userAgg.addRoles(roles);
+        return userAgg;
     }
 
 }

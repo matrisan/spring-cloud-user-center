@@ -18,7 +18,7 @@ import java.util.Set;
 @Slf4j
 @Getter
 @Setter
-public class CreateUserCommand {
+public class UserCreateCommand {
 
     private Set<Long> roleIds;
 

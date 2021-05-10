@@ -13,15 +13,15 @@ import org.springframework.security.core.AuthenticationException;
  */
 
 @Slf4j
-public class PhoneNotFoundException extends AuthenticationException {
+public class UserIdNotFoundException extends AuthenticationException {
 
     private static final long serialVersionUID = 978597440668641452L;
 
-    public PhoneNotFoundException(String msg) {
+    public UserIdNotFoundException(String msg) {
         super(msg);
     }
 
-    public PhoneNotFoundException(String msg, Throwable cause) {
+    public UserIdNotFoundException(String msg, Throwable cause) {
         super(msg, cause);
     }
 
