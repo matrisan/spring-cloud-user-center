@@ -1,7 +1,7 @@
 package com.github.user.center.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.github.user.center.domain.aggregate.SystemUserAggregateRoot;
+import com.github.user.center.domain.aggregate.SystemUserAgg;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,6 +35,8 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SystemRoleEntity implements GrantedAuthority {
 
+    private static final long serialVersionUID = -3457042881449113477L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
@@ -50,7 +52,7 @@ public class SystemRoleEntity implements GrantedAuthority {
 
     @JsonBackReference
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.DETACH}, mappedBy = "roles")
-    private List<SystemUserAggregateRoot> users;
+    private List<SystemUserAgg> users;
 
     @Override
     public String getAuthority() {

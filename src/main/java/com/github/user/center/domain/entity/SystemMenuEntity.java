@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.access.ConfigAttribute;
 
 import javax.persistence.Column;
@@ -29,31 +30,32 @@ import javax.persistence.Id;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SystemMenuEntity implements ConfigAttribute {
 
+    private static final long serialVersionUID = -7068753554204834403L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(name = "url", columnDefinition = "VARCHAR(100) COMMENT '资源URL'")
+    @Column(columnDefinition = "VARCHAR(100) COMMENT '资源URL'")
     String url;
 
-    @Column(name = "method", columnDefinition = "VARCHAR(100) COMMENT '资源请求方式'")
-    String method;
+    @Column(columnDefinition = "CHAR(10) COMMENT '资源请求方式'")
+    HttpMethod method;
 
-    @Column(nullable = false, columnDefinition = "INT(1) DEFAULT 0 COMMENT '菜单优先级'")
+    @Column(nullable = false, columnDefinition = "SMALLINT DEFAULT 0 COMMENT '菜单优先级'")
     Integer priority;
 
-    @Column(name = "menu_code", nullable = false, columnDefinition = "VARCHAR(20) COMMENT '资源唯一名称'")
-    String resourceCode;
+    @Column(name = "menu_code", nullable = false, columnDefinition = "CHAR(20) COMMENT '资源唯一名称'")
+    String menuCode;
 
     @Column(name = "menu_note", nullable = false, columnDefinition = "VARCHAR(50) COMMENT '资源URL'")
-    String resourceNote;
+    String menuNote;
 
-    String attribute;
-
+    @Column(name = "parent_id")
     Long parentId;
 
     @Override
     public String getAttribute() {
-        return attribute;
+        return url;
     }
 }

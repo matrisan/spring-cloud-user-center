@@ -1,8 +1,10 @@
 package com.github.user.center.domain.repository;
 
-import com.github.user.center.domain.aggregate.SystemUserAggregateRoot;
+import com.github.user.center.domain.aggregate.SystemUserAgg;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+
+import java.util.Optional;
 
 /**
  * TODO
@@ -13,5 +15,11 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  * @version 0.0.1
  */
 
-public interface ISystemUserRepository extends JpaRepository<SystemUserAggregateRoot, Long>, JpaSpecificationExecutor<SystemUserAggregateRoot> {
+public interface ISystemUserRepository extends JpaRepository<SystemUserAgg, Long>, JpaSpecificationExecutor<SystemUserAgg> {
+
+    Optional<SystemUserAgg> findByUsername(String username);
+
+
+    Optional<SystemUserAgg> findByPhone(String mobile);
+
 }

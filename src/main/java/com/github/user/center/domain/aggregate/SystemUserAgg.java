@@ -7,9 +7,13 @@ import com.github.user.center.domain.common.SystemUserExtend;
 import com.github.user.center.domain.entity.SystemRoleEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.AfterDomainEventPublication;
+import org.springframework.data.domain.DomainEvents;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.CascadeType;
@@ -27,6 +31,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.MapKey;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -48,11 +53,15 @@ import static javax.persistence.ConstraintMode.NO_CONSTRAINT;
 @Slf4j
 @Getter
 @Entity
+@ToString
 @AggregateRoot
+@NoArgsConstructor
 @Setter(AccessLevel.PRIVATE)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @SecondaryTable(name = USER_EXTEND_INFO, pkJoinColumns = @PrimaryKeyJoinColumn(name = USER_ID), foreignKey = @ForeignKey(NO_CONSTRAINT))
-public class SystemUserAggregateRoot implements UserDetails {
+public class SystemUserAgg implements UserDetails {
+
+    private static final long serialVersionUID = -8750984095480358268L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,6 +69,9 @@ public class SystemUserAggregateRoot implements UserDetails {
 
     @Column(columnDefinition = "VARCHAR(50) COMMENT '用户名'")
     String username;
+
+    @Column(table = USER_EXTEND_INFO, columnDefinition = "CHAR(20) COMMENT '手机号码'")
+    String phone;
 
     @JsonIgnore
     @Column(columnDefinition = "VARCHAR(255) COMMENT '密码'")
@@ -76,6 +88,9 @@ public class SystemUserAggregateRoot implements UserDetails {
     )
     Map<Long, SystemRoleEntity> roles;
 
+    /**
+     * 用户的其他信息
+     */
     @Embedded
     SystemUserExtend userInfo;
 
@@ -91,9 +106,22 @@ public class SystemUserAggregateRoot implements UserDetails {
     @Column(name = "credentials_non_expired", columnDefinition = "DATETIME COMMENT '凭证没有过期'")
     Date credentialsNonExpired;
 
+    public SystemUserAgg(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
+    public SystemUserAgg(String username, String phone, String password) {
+        this.username = username;
+        this.phone = phone;
+        this.password = password;
+    }
 
     public void addRoles(List<SystemRoleEntity> roles) {
 
+    }
+
+    public void replaceAllRoles(List<SystemRoleEntity> roles) {
     }
 
     public void deleteRoles(List<SystemRoleEntity> roles) {
@@ -124,4 +152,15 @@ public class SystemUserAggregateRoot implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    @DomainEvents
+    List<Object> domainEvents() {
+        return new ArrayList<>();
+    }
+
+    @AfterDomainEventPublication
+    void callbackMethod() {
+        log.info("AfterDomainEventPublication");
+    }
+
 }
