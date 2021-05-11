@@ -2,8 +2,8 @@ package com.github.user.center.application.annotation.constraints.validator;
 
 import com.github.user.center.application.UserPasswordUpdateCommand;
 import com.github.user.center.application.annotation.constraints.Password;
-import com.github.user.center.domain.aggregate.SystemUserAgg;
-import com.github.user.center.domain.repository.ISystemUserRepository;
+import com.github.user.center.domain.entity.SystemUserEntity;
+import com.github.user.center.infrastructure.dao.ISystemUserDao;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.history.Revisions;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,14 +26,14 @@ import java.time.LocalDateTime;
 public class PasswordValidator implements ConstraintValidator<Password, UserPasswordUpdateCommand> {
 
     @Resource
-    private ISystemUserRepository repository;
+    private ISystemUserDao repository;
 
     @Resource
     private PasswordEncoder passwordEncoder;
 
     @Override
     public boolean isValid(UserPasswordUpdateCommand value, ConstraintValidatorContext context) {
-        Revisions<Integer, SystemUserAgg> revisions = repository.findRevisionsByIdAndLastModifiedDateAfter(value.getUserId(), LocalDateTime.now().minusMonths(6));
+        Revisions<Integer, SystemUserEntity> revisions = repository.findRevisionsByIdAndLastModifiedDateAfter(value.getUserId(), LocalDateTime.now().minusMonths(6));
         return revisions.stream().noneMatch(one -> passwordEncoder.matches(value.getPassword(), one.getEntity().getPassword()));
     }
 }

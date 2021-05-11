@@ -1,7 +1,7 @@
 package com.github.user.center.application.service;
 
-import com.github.user.center.domain.aggregate.SystemUserAgg;
-import com.github.user.center.domain.repository.ISystemUserRepository;
+import com.github.user.center.domain.entity.SystemUserEntity;
+import com.github.user.center.infrastructure.dao.ISystemUserDao;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,11 +24,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final ISystemUserRepository userRepository;
+    private final ISystemUserDao userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<SystemUserAgg> optional = userRepository.findByUsername(username);
+        Optional<SystemUserEntity> optional = userRepository.findByUsername(username);
         if (optional.isEmpty()) {
             throw new UsernameNotFoundException("Username Not Found");
         }
@@ -36,7 +36,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     public UserDetails loadUserByPhone(String phone) {
-        Optional<SystemUserAgg> optional = userRepository.findByPhone(phone);
+        Optional<SystemUserEntity> optional = userRepository.findByPhone(phone);
         if (optional.isEmpty()) {
             throw new UsernameNotFoundException("Username Not Found");
         }

@@ -1,4 +1,4 @@
-package com.github.user.center.domain.repository;
+package com.github.user.center.infrastructure.dao;
 
 import com.github.user.center.domain.entity.SystemRoleEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,6 +13,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  * @version 0.0.1
  */
 
-public interface ISystemRoleRepository extends JpaRepository<SystemRoleEntity, Long>, JpaSpecificationExecutor<SystemRoleEntity> {
+public interface ISystemRoleDao extends JpaRepository<SystemRoleEntity, Long>, JpaSpecificationExecutor<SystemRoleEntity> {
 
 }

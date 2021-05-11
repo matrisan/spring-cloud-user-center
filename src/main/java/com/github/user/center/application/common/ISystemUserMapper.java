@@ -2,7 +2,8 @@ package com.github.user.center.application.common;
 
 import com.github.user.center.application.UserCreateCommand;
 import com.github.user.center.application.UserSaveResult;
-import com.github.user.center.domain.aggregate.SystemUserAgg;
+import com.github.user.center.domain.entity.SystemUserEntity;
+import com.github.user.center.interfaces.dto.ISystemQueryResult;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -24,12 +25,12 @@ public interface ISystemUserMapper {
     ISystemUserMapper INSTANCE = Mappers.getMapper(ISystemUserMapper.class);
 
     /**
-     * {@link SystemUserAgg} 转换成 {@link UserSaveResult}
+     * {@link SystemUserEntity} 转换成 {@link UserSaveResult}
      *
      * @param user 用户实体类
      * @return 用户保存结果
      */
-    UserSaveResult from(SystemUserAgg user);
+    UserSaveResult from(SystemUserEntity user);
 
 
     /**
@@ -38,6 +39,8 @@ public interface ISystemUserMapper {
      * @param command 创建用户命令
      * @return 用户实体类
      */
-    SystemUserAgg from(UserCreateCommand command);
+    SystemUserEntity from(UserCreateCommand command);
+
+    ISystemQueryResult fromEntity(SystemUserEntity entity);
 
 }

@@ -1,6 +1,7 @@
 package com.github.user.center.domain.repository;
 
-import com.github.user.center.domain.aggregate.SystemUserAgg;
+import com.github.user.center.domain.entity.SystemUserEntity;
+import com.github.user.center.infrastructure.dao.ISystemUserDao;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Assertions;
@@ -26,34 +27,34 @@ import java.util.Optional;
 @DataJpaTest
 @ActiveProfiles("junit")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class ISystemUserRepositoryTest {
+class ISystemUserDaoTest {
 
     private static final String USERNAME = RandomStringUtils.randomAlphabetic(10);
     private static final String PHONE = RandomStringUtils.randomAlphanumeric(11);
     private static final String PASSWORD = RandomStringUtils.randomAlphabetic(10);
 
     @Resource
-    private ISystemUserRepository repository;
+    private ISystemUserDao repository;
 
 
     @DisplayName("先存入一个用户的信息")
     @BeforeAll
     void saveOne() {
-        SystemUserAgg userAgg = new SystemUserAgg(
+        SystemUserEntity userAgg = new SystemUserEntity(
                 USERNAME,
                 PHONE,
                 PASSWORD
         );
-        SystemUserAgg save = repository.save(userAgg);
+        SystemUserEntity save = repository.save(userAgg);
         log.info("存入用户数据:{}", save);
     }
 
     @DisplayName("根据用户名,查询刚刚存入的用户")
     @Test
     void findByUsername() {
-        Optional<SystemUserAgg> optional = repository.findByUsername(USERNAME);
+        Optional<SystemUserEntity> optional = repository.findByUsername(USERNAME);
         Assertions.assertTrue(optional.isPresent());
-        SystemUserAgg userAgg = optional.get();
+        SystemUserEntity userAgg = optional.get();
         log.info("查询到用户信息!{}", userAgg);
         Assertions.assertEquals(USERNAME, userAgg.getUsername());
     }
@@ -61,9 +62,9 @@ class ISystemUserRepositoryTest {
     @DisplayName("根据用户名,查询刚刚存入的用户")
     @Test
     void findByPhone() {
-        Optional<SystemUserAgg> optional = repository.findByPhone(PHONE);
+        Optional<SystemUserEntity> optional = repository.findByPhone(PHONE);
         Assertions.assertTrue(optional.isPresent());
-        SystemUserAgg userAgg = optional.get();
+        SystemUserEntity userAgg = optional.get();
         log.info("查询到用户信息!{}", userAgg);
         Assertions.assertEquals(USERNAME, userAgg.getUsername());
     }

@@ -1,11 +1,9 @@
-package com.github.user.center.domain.aggregate;
+package com.github.user.center.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.github.user.center.domain.annotation.AggregateRoot;
 import com.github.user.center.domain.common.SystemUserExtend;
-import com.github.user.center.domain.entity.BaseEntity;
-import com.github.user.center.domain.entity.SystemRoleEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,11 +11,12 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.Where;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.springframework.data.domain.AfterDomainEventPublication;
 import org.springframework.data.domain.DomainEvents;
-import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -26,15 +25,14 @@ import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.MapKey;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
+import javax.persistence.Transient;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -54,14 +52,14 @@ import static javax.persistence.ConstraintMode.NO_CONSTRAINT;
 @Slf4j
 @Getter
 @Entity
-//@Audited(targetAuditMode = NOT_AUDITED)
+@Audited
 @ToString
 @AggregateRoot
 @NoArgsConstructor
 @Setter(AccessLevel.PRIVATE)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @SecondaryTable(name = USER_EXTEND_INFO, pkJoinColumns = @PrimaryKeyJoinColumn(name = USER_ID), foreignKey = @ForeignKey(NO_CONSTRAINT))
-public class SystemUserAgg extends BaseEntity implements UserDetails {
+public class SystemUserEntity extends BaseEntity {
 
     private static final long serialVersionUID = -8750984095480358268L;
 
@@ -78,16 +76,16 @@ public class SystemUserAgg extends BaseEntity implements UserDetails {
     @JsonIgnore
     String password;
 
-    @MapKey
-    @JsonManagedReference
-    @ManyToMany(targetEntity = SystemRoleEntity.class, cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "mid_role_user",
-            joinColumns = @JoinColumn(name = "mid_user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "mid_role_id", referencedColumnName = "id"),
-            foreignKey = @ForeignKey(NO_CONSTRAINT)
-    )
+    @Transient
     Map<Long, SystemRoleEntity> roles;
+
+    @MapKey
+    @NotAudited
+    @OrderBy("roleId ASC")
+    @OneToMany(mappedBy = "SystemUserAgg", fetch = FetchType.LAZY)
+    @JsonManagedReference
+    @Where(clause = "expiredDate = NULL OR expiredDate <= CURRENT_DATE")
+    Map<Long, SystemUserRoleEntity> userRole;
 
     /**
      * 用户的其他信息
@@ -97,22 +95,25 @@ public class SystemUserAgg extends BaseEntity implements UserDetails {
 
     @JsonIgnore
     @Column(name = "account_non_expired", columnDefinition = "DATETIME COMMENT '账户没有过期'")
-    Date accountNonExpired;
+    LocalDateTime accountNonExpired;
 
     @JsonIgnore
     @Column(name = "account_non_locked", columnDefinition = "DATETIME COMMENT '账户没有被锁定'")
-    Date accountNonLocked;
+    LocalDateTime accountNonLocked;
 
     @JsonIgnore
     @Column(name = "credentials_non_expired", columnDefinition = "DATETIME COMMENT '凭证没有过期'")
-    Date credentialsNonExpired;
+    LocalDateTime credentialsNonExpired;
 
-    public SystemUserAgg(String username, String password) {
+    @Column(name = "enabled", columnDefinition = "DATETIME COMMENT '账号用没用启用'")
+    LocalDateTime enabled;
+
+    public SystemUserEntity(String username, String password) {
         this.username = username;
         this.password = password;
     }
 
-    public SystemUserAgg(String username, String phone, String password) {
+    public SystemUserEntity(String username, String phone, String password) {
         this.username = username;
         this.phone = phone;
         this.password = password;
@@ -134,27 +135,18 @@ public class SystemUserAgg extends BaseEntity implements UserDetails {
         return true;
     }
 
-    @Override
-    public Collection<SystemRoleEntity> getAuthorities() {
-        return roles.values();
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
+    public boolean getAccountNonExpired() {
         return true;
     }
 
-    @Override
-    public boolean isAccountNonLocked() {
+    public boolean getAccountNonLocked() {
         return true;
     }
 
-    @Override
-    public boolean isCredentialsNonExpired() {
+    public boolean getCredentialsNonExpired() {
         return true;
     }
 
-    @Override
     public boolean isEnabled() {
         return true;
     }
