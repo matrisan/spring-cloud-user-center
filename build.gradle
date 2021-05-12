@@ -15,7 +15,6 @@ configurations {
 }
 
 repositories {
-//    maven { 'https://maven.aliyun.com/nexus/content/groups/public/' }
     mavenCentral()
 }
 
@@ -31,7 +30,7 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-ui:1.5.8'
     implementation 'org.realityforge.org.jetbrains.annotations:org.jetbrains.annotations:1.7.0'
     implementation 'org.mapstruct:mapstruct:1.4.2.Final'
-    implementation 'org.mapstruct:mapstruct-processor:1.4.2.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
     implementation 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'mysql:mysql-connector-java'
@@ -43,6 +42,15 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'com.h2database:h2'
     testImplementation 'com.github.javafaker:javafaker:1.0.2'
+    testImplementation 'org.mapstruct:mapstruct:1.4.2.Final'
+    testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
+}
+
+compileJava {
+    options.compilerArgs = [
+            '-Amapstruct.suppressGeneratorTimestamp=true',
+            '-Amapstruct.suppressGeneratorVersionInfoComment=true'
+    ]
 }
 
 test {

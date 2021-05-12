@@ -1,40 +1,29 @@
 package com.github.user.center.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.github.user.center.domain.annotation.AggregateRoot;
 import com.github.user.center.domain.common.SystemUserExtend;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.annotations.Where;
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
 import org.springframework.data.domain.AfterDomainEventPublication;
 import org.springframework.data.domain.DomainEvents;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.MapKey;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
-import javax.persistence.Transient;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static com.github.user.center.domain.common.IUserExtendInfo.USER_EXTEND_INFO;
 import static com.github.user.center.domain.common.IUserExtendInfo.USER_ID;
@@ -52,10 +41,10 @@ import static javax.persistence.ConstraintMode.NO_CONSTRAINT;
 @Slf4j
 @Getter
 @Entity
-@Audited
+//@Audited
 @ToString
 @AggregateRoot
-@NoArgsConstructor
+//@NoArgsConstructor
 @Setter(AccessLevel.PRIVATE)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @SecondaryTable(name = USER_EXTEND_INFO, pkJoinColumns = @PrimaryKeyJoinColumn(name = USER_ID), foreignKey = @ForeignKey(NO_CONSTRAINT))
@@ -76,16 +65,13 @@ public class SystemUserEntity extends BaseEntity {
     @JsonIgnore
     String password;
 
-    @Transient
-    Map<Long, SystemRoleEntity> roles;
-
-    @MapKey
-    @NotAudited
-    @OrderBy("roleId ASC")
-    @OneToMany(mappedBy = "SystemUserAgg", fetch = FetchType.LAZY)
-    @JsonManagedReference
-    @Where(clause = "expiredDate = NULL OR expiredDate <= CURRENT_DATE")
-    Map<Long, SystemUserRoleEntity> userRole;
+//    @MapKey
+//    @NotAudited
+//    @OrderBy("roleId ASC")
+//    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+//    @JsonManagedReference
+//    @Where(clause = "expiredDate = NULL OR expiredDate <= CURRENT_DATE")
+//    Map<SystemUserRoleEntity.UserRolePk, SystemUserRoleEntity> userRole;
 
     /**
      * 用户的其他信息
@@ -107,6 +93,9 @@ public class SystemUserEntity extends BaseEntity {
 
     @Column(name = "enabled", columnDefinition = "DATETIME COMMENT '账号用没用启用'")
     LocalDateTime enabled;
+
+    public SystemUserEntity() {
+    }
 
     public SystemUserEntity(String username, String password) {
         this.username = username;

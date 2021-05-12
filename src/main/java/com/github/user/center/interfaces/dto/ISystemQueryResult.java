@@ -1,8 +1,10 @@
 package com.github.user.center.interfaces.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -25,7 +27,7 @@ public interface ISystemQueryResult extends Serializable {
      *
      * @return ID
      */
-    String getId();
+    Long getId();
 
     /**
      * NAME
@@ -45,6 +47,8 @@ public interface ISystemQueryResult extends Serializable {
     @Setter
     @Builder
     @ToString
+    @NoArgsConstructor
+    @AllArgsConstructor
     class SystemQueryResult implements ISystemQueryResult {
 
         private static final long serialVersionUID = -8929477193624059903L;

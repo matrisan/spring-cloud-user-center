@@ -21,7 +21,7 @@ import java.util.Optional;
 
 public interface ISystemUserDao extends JpaRepository<SystemUserEntity, Long>, JpaSpecificationExecutor<SystemUserEntity>, RevisionRepository<SystemUserEntity, Long, Integer> {
 
-    SystemUserEntity findSystemUserAggById(long id);
+    SystemUserEntity findSystemEntityById(long id);
 
     Optional<SystemUserEntity> findByUsername(String username);
 

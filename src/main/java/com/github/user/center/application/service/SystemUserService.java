@@ -4,13 +4,11 @@ import com.github.user.center.application.UserCreateCommand;
 import com.github.user.center.application.UserPasswordUpdateCommand;
 import com.github.user.center.application.UserSaveResult;
 import com.github.user.center.application.UserUpdateCommand;
-import com.github.user.center.application.common.ISystemUserMapper;
 import com.github.user.center.application.common.UserCreateFactory;
-import com.github.user.center.application.exception.UserIdNotFoundException;
 import com.github.user.center.domain.entity.SystemRoleEntity;
 import com.github.user.center.domain.entity.SystemUserEntity;
+import com.github.user.center.domain.repository.SystemUserRepository;
 import com.github.user.center.infrastructure.dao.ISystemRoleDao;
-import com.github.user.center.infrastructure.dao.ISystemUserDao;
 import com.github.user.center.interfaces.dto.ISystemQueryResult;
 import com.github.user.center.interfaces.dto.UserQueryRequest;
 import lombok.RequiredArgsConstructor;
@@ -38,15 +36,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SystemUserService {
 
-    private final ISystemUserDao userRepository;
+    private final SystemUserRepository userRepository;
 
     private final ISystemRoleDao roleRepository;
 
     public Page<ISystemQueryResult> findAllUser(@Validated UserQueryRequest request, Pageable pageable) {
-        Page<SystemUserEntity> aggs = userRepository.findAll(request.specification(), pageable);
-
-
-        return null;
+        return userRepository.findAll(request, pageable);
     }
 
     /**
@@ -60,8 +55,7 @@ public class SystemUserService {
         log.info("创建用户:{}", command);
         List<SystemRoleEntity> roles = roleRepository.findAllById(command.getRoleIds());
         SystemUserEntity user = UserCreateFactory.createUser(command, roles);
-        SystemUserEntity save = userRepository.save(user);
-        return ISystemUserMapper.INSTANCE.from(save);
+        return userRepository.save(user);
     }
 
     /**
@@ -71,7 +65,7 @@ public class SystemUserService {
      * @return bool
      */
     public boolean updatePassword(@Validated UserPasswordUpdateCommand command) {
-        SystemUserEntity agg = userRepository.findSystemUserAggById(command.getUserId());
+        SystemUserEntity agg = userRepository.findByUserId(command.getUserId());
         log.info("用户更新了密码:{}", agg);
         return agg.updatePassword((command.getPassword()));
     }
@@ -83,16 +77,12 @@ public class SystemUserService {
      * @return 用户信息
      */
     @Transactional(rollbackFor = Throwable.class)
-    public UserSaveResult updateUser(@Validated UserUpdateCommand command) {
+    public boolean updateUser(@Validated UserUpdateCommand command) {
         log.info("更新用户角色");
-        Optional<SystemUserEntity> optional = userRepository.findById(command.getUserId());
-        if (optional.isEmpty()) {
-            throw new UserIdNotFoundException("找不到用户的 ID");
-        }
+        SystemUserEntity agg = userRepository.findByUserId(command.getUserId());
         List<SystemRoleEntity> roles = roleRepository.findAllById(command.getRoleIds());
-        SystemUserEntity userAgg = optional.get();
-        userAgg.replaceAllRoles(roles);
-        return ISystemUserMapper.INSTANCE.from(userAgg);
+        agg.replaceAllRoles(roles);
+        return true;
     }
 
     /**

@@ -1,8 +1,11 @@
 package com.github.user.center.application.common;
 
 import com.github.user.center.application.UserCreateCommand;
+import com.github.user.center.domain.converter.SystemUserConverter;
 import com.github.user.center.domain.entity.SystemRoleEntity;
 import com.github.user.center.domain.entity.SystemUserEntity;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -17,13 +20,11 @@ import java.util.List;
  */
 
 @Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserCreateFactory {
 
-    private UserCreateFactory() {
-    }
-
     public static SystemUserEntity createUser(UserCreateCommand command, List<SystemRoleEntity> roles) {
-        SystemUserEntity userAgg = ISystemUserMapper.INSTANCE.from(command);
+        SystemUserEntity userAgg = SystemUserConverter.fromCreateCommand(command);
         userAgg.addRoles(roles);
         return userAgg;
     }

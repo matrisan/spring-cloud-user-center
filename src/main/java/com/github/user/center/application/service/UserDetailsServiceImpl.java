@@ -32,7 +32,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if (optional.isEmpty()) {
             throw new UsernameNotFoundException("Username Not Found");
         }
-        return optional.get();
+        return null;
     }
 
     public UserDetails loadUserByPhone(String phone) {
@@ -40,7 +40,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if (optional.isEmpty()) {
             throw new UsernameNotFoundException("Username Not Found");
         }
-        return optional.get();
+        return null;
     }
 
 
